@@ -26,8 +26,10 @@
   (let [haku-data (:body (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
                                                               :decade (get-decade decade) :media "video" :page "1"}}))
         haku-data-kw (cw/keywordize-keys (json/read-str haku-data))
-        results (second (rest haku-data-kw))]
-    (println results)))
+        results (second (rest haku-data-kw))
+        results-with-article-ids (second results)]
+    (println results)
+    (map #(println (:articleId %)) results-with-article-ids)))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
