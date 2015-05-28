@@ -2,7 +2,18 @@
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [clj-http.client :as client]
+            [clojure-csv.core :refer [parse-csv]]
+            [clojure.walk :as cw]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+
+(def csv (parse-csv (slurp "/home/leena/github/meanwhile/resources/mediashort.csv")))
+
+(def csv-map (reduce conj {} csv))
+
+(def csv-keywordized (cw/keywordize-keys csv-map))
+
+(defn get-video-id [article-id]
+  ((keyword article-id) csv-keywordized))
 
 (defn- parse-int [s]
   (Integer. (re-find  #"\d+" s )))
