@@ -3,6 +3,7 @@
             [compojure.route :as route]
             [clj-http.client :as client]
             [clojure-csv.core :refer [parse-csv]]
+            [clojure.data.json :as json]
             [clojure.walk :as cw]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
@@ -22,8 +23,11 @@
   (str decade-start "/" (+ (parse-int decade-start) 9)))
 
 (defn get-haku-data [decade]
-  (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
+  (let [haku-data (:body (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
                                                               :decade (get-decade decade) :media "video" :page "1"}}))
+        haku-data-kw (cw/keywordize-keys (json/read-str haku-data))
+        results (second (rest haku-data-kw))]
+    (println results)))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
