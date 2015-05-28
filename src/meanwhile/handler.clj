@@ -1,6 +1,7 @@
 (ns meanwhile.handler
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
+            [cheshire.core :as ch]
             [clj-http.client :as client]
             [clojure-csv.core :refer [parse-csv]]
             [clojure.data.json :as json]
@@ -22,6 +23,12 @@
 (defn- get-decade [decade-start]
   (str decade-start "/" (+ (parse-int decade-start) 9)))
 
+(defn add-media-id [result]
+  (let [video-id (get-video-id (:articleId result))
+         result-with-media (assoc result :mediaId video-id)]
+    (println result-with-media)
+    result-with-media))
+
 (defn get-haku-data [decade]
   (let [haku-data (:body (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
                                                               :decade (get-decade decade) :media "video" :page "1"}}))
@@ -29,7 +36,9 @@
         results (second (rest haku-data-kw))
         results-with-article-ids (second results)]
     (println results)
-    (map #(println (:articleId %)) results-with-article-ids)))
+    (println (map #(add-media-id %) results-with-article-ids))
+    (println results)
+    (json/write-str results)))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")

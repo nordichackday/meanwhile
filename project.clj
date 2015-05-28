@@ -5,9 +5,11 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [compojure "1.3.1"]
                  [ring/ring-defaults "0.1.2"]
+                 [cheshire "5.5.0"]
                  [clj-http "1.1.2"]
                  [clojure-csv/clojure-csv "2.0.1"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [ring.middleware.jsonp "0.1.6"]]
   :plugins [[lein-ring "0.8.13"]]
   :ring {:handler meanwhile.handler/app}
   :profiles
