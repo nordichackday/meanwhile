@@ -21,10 +21,13 @@
 (defn- get-decade [decade-start]
   (str decade-start "/" (+ (parse-int decade-start) 9)))
 
+(defn get-haku-data [decade]
+  (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
+                                                              :decade (get-decade decade) :media "video" :page "1"}}))
+
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (GET "/archive/:decade" [decade] (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
-                                                                       :decade (get-decade decade) :media "video" :page "1"}}))
+  (GET "/archive/:decade" [decade] (get-haku-data decade))
   (GET "/video" [] (client/get "http://yle.fi/aihe/artikkeli/2015/04/23/holmbergin-jaakarin-morsian-kohahdutti-maltillisuudellaan"))
   (route/not-found "Not Found"))
 
