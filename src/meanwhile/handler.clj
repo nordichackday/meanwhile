@@ -34,11 +34,10 @@
                                                               :decade (get-decade decade) :media "video" :page "1"}}))
         haku-data-kw (cw/keywordize-keys (json/read-str haku-data))
         results (second (rest haku-data-kw))
-        results-with-article-ids (second results)]
-    (println results)
-    (println (map #(add-media-id %) results-with-article-ids))
-    (println results)
-    (json/write-str results)))
+        results-with-article-ids (second results)
+        new-results (assoc {} :newresult (map #(add-media-id %) results-with-article-ids))]
+    (println new-results)
+    (json/write-str new-results)))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
