@@ -11,7 +11,7 @@
             [ring.middleware.json :as middleware]
             [ring.middleware.jsonp :refer [wrap-json-with-padding]]))
 
-(def csv (parse-csv (slurp "/home/leena/github/meanwhile/resources/mediashort.csv")))
+(def csv (parse-csv (slurp "resources/mediashort.csv")))
 
 (def csv-map (reduce conj {} csv))
 
