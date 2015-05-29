@@ -9,7 +9,8 @@
                  [clj-http "1.1.2"]
                  [clojure-csv/clojure-csv "2.0.1"]
                  [org.clojure/data.json "0.2.6"]
-                 [ring.middleware.jsonp "0.1.6"]]
+                 [ring.middleware.jsonp "0.1.6"]
+                 [ring/ring-json "0.3.1"]]
   :plugins [[lein-ring "0.8.13"]]
   :ring {:handler meanwhile.handler/app}
   :profiles

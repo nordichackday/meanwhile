@@ -6,13 +6,22 @@
             [clojure-csv.core :refer [parse-csv]]
             [clojure.data.json :as json]
             [clojure.walk :as cw]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [compojure.handler :as handler] ; form, query params decode; cookie; session, etc
+            [ring.middleware.json :as middleware]
+            [ring.middleware.jsonp :refer [wrap-json-with-padding]]))
 
 (def csv (parse-csv (slurp "/home/leena/github/meanwhile/resources/mediashort.csv")))
 
 (def csv-map (reduce conj {} csv))
 
 (def csv-keywordized (cw/keywordize-keys csv-map))
+
+(defn- json-response
+  [data]
+  {:status  200
+   :headers {}
+   :body    (ch/generate-string data)})
 
 (defn get-video-id [article-id]
   ((keyword article-id) csv-keywordized))
@@ -37,13 +46,19 @@
         results-with-article-ids (second results)
         new-results (assoc {} :newresult (map #(add-media-id %) results-with-article-ids))]
     (println new-results)
-    (json/write-str new-results)))
+    new-results))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (GET "/archive/:decade" [decade] (get-haku-data decade))
+  (GET "/archive/:decade" [decade] (json-response (get-haku-data decade)))
   (GET "/video" [] (client/get "http://yle.fi/aihe/artikkeli/2015/04/23/holmbergin-jaakarin-morsian-kohahdutti-maltillisuudellaan"))
   (route/not-found "Not Found"))
 
+(defn middleware [routes]
+  (-> routes
+    wrap-json-with-padding
+    handler/site))
+
 (def app
-  (wrap-defaults app-routes site-defaults))
+  (middleware app-routes))
+
