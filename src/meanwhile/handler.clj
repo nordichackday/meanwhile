@@ -38,9 +38,9 @@
     (println result-with-media)
     result-with-media))
 
-(defn get-haku-data [decade]
+(defn get-haku-data [decade genre]
   (let [haku-data (:body (client/get "http://haku.yle.fi/api/search" {:query-params {:category "elavaarkisto" :UILanguage "fi"
-                                                              :decade (get-decade decade) :media "video" :page "1"}}))
+                                                              :decade (get-decade decade) :media "video" :page "1" :keyword genre}}))
         haku-data-kw (cw/keywordize-keys (json/read-str haku-data))
         results (second (rest haku-data-kw))
         results-with-article-ids (second results)
@@ -50,7 +50,8 @@
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (GET "/archive/:decade" [decade] (json-response (get-haku-data decade)))
+  (GET "/archive/:decade/:genre" [decade genre] (json-response (get-haku-data decade genre)))
+  (GET "/archive/:decade" [decade] (json-response (get-haku-data decade "")))
   (GET "/video" [] (client/get "http://yle.fi/aihe/artikkeli/2015/04/23/holmbergin-jaakarin-morsian-kohahdutti-maltillisuudellaan"))
   (route/not-found "Not Found"))
 
